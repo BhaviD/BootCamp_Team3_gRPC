@@ -7,7 +7,7 @@ pipeline {
         stage('gRPC-server docker image build') {
             steps {
                 echo 'Building gRPC-server docker image'
-                sh 'docker build -t img-go-grpc:1.1.1'
+                sh 'docker build -t img-go-grpc:1.1.1 .'
               
             }
         }
