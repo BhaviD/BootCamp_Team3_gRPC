@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/BhaviD/BootCamp_Team3_gRPC/pkg/dynamoDB"
 	"github.com/BhaviD/BootCamp_Team3_gRPC/pkg/services/grpcPb"
 	"github.com/BhaviD/BootCamp_Team3_gRPC/pkg/services/grpc_server"
 	"google.golang.org/grpc"
@@ -20,12 +19,12 @@ func main()  {
 
 	grpcPb.RegisterGRPCServiceServer(s, &grpc_server.GrpcServer{})
 
-	dynamoDB.AddCustomerTable()
-	dynamoDB.LoadCustomerData()
-	dynamoDB.AddRestaurantTable()
-	dynamoDB.LoadRestaurantData()
-	dynamoDB.AddOrderTable()
-	dynamoDB.LoadOrderData()
+	//dynamoDB.AddCustomerTable()
+	//dynamoDB.LoadCustomerData()
+	//dynamoDB.AddRestaurantTable()
+	//dynamoDB.LoadRestaurantData()
+	//dynamoDB.AddOrderTable()
+	//dynamoDB.LoadOrderData()
 
 	fmt.Println("Orders Server starting...")
 	if s.Serve(lis); err != nil {

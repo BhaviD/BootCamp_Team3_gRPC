@@ -15,6 +15,7 @@ pipeline {
         stage('Execute') {
             steps {
                 echo 'Compiling and building'
+                sh 'go run cmd/grpc_server/main.go &'
             }
         }  
     }
