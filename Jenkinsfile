@@ -8,12 +8,10 @@ pipeline {
             steps {
                 echo 'Stopping existing gRPC container'
                 sh 'docker stop cont-go-grpc'
-            }
-            steps {
+
                 echo 'Remove existing gRPC image'
                 sh 'docker rmi img-go-grpc:1.1.1'
-            }
-            steps {
+
                 echo 'Building new gRPC image'
                 sh 'docker build -t img-go-grpc:1.1.1 .'
             }
