@@ -3,20 +3,20 @@ pipeline {
     tools {
         go 'go1.14'
     }
-    stages {        
-        stage('Pre Test') {
+    stages {
+        stage('gRPC-server docker image build') {
             steps {
-                echo 'Installing dependencies'
-                sh 'go version'
+                echo 'Building gRPC-server docker image'
+                sh 'docker build -t img-go-grpc:1.1.1'
               
             }
         }
-        
-        stage('Execute') {
+
+        stage('gRPC-server docker container run') {
             steps {
-                echo 'Compiling and building'
-                sh 'go run cmd/grpc_server/main.go'
+                echo 'Running the gRPC-server docker container'
+                sh 'docker run --rm -p 50051:50051 --net=my_bridge --name=cont-go-grpc img-go-grpc:1.1.1'
             }
-        }  
+        }
     }
 }
