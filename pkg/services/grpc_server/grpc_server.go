@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/BhaviD/BootCamp_Team3_gRPC/pkg/dynamoDB/dbUtil"
 	"github.com/BhaviD/BootCamp_Team3_gRPC/pkg/dynamoDB/types"
 	"github.com/BhaviD/BootCamp_Team3_gRPC/pkg/errorutil"
 	"github.com/BhaviD/BootCamp_Team3_gRPC/pkg/services/grpcPb"
 	"github.com/BhaviD/BootCamp_Team3_gRPC/pkg/services/restaurantService"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
@@ -18,14 +18,6 @@ import (
 	"log"
 	"strconv"
 )
-
-func getDBInstance() *dynamodb.DynamoDB {
-	sess := session.Must(session.NewSession(&aws.Config{
-		Endpoint: aws.String("http://localhost:8000"),
-		Region: aws.String("us-east-1"),
-	}))
-	return dynamodb.New(sess)
-}
 
 type GrpcServer struct {}
 var orders_table = "T3_Order"
@@ -76,7 +68,7 @@ func (*GrpcServer) GetOrderDetails (ctx context.Context, req *grpcPb.OrderDetail
 		expression.Name("Discount"),
 		)
 	var order types.Order
-	db := getDBInstance()
+	db := dbUtil.GetDBInstance()
 
 	keyCondition := expression.Key("Id").Equal(expression.Value(order_id))
 	expr, errExpression := expression.NewBuilder().WithKeyCondition(keyCondition).WithProjection(proj).Build()
@@ -146,7 +138,7 @@ func (*GrpcServer) CreateOrder (ctx context.Context, req *grpcPb.CreateOrderRequ
 
 	log.Println("order create ", order)
 
-	db := getDBInstance()
+	db := dbUtil.GetDBInstance()
 
 	orderMap, err := dynamodbattribute.MarshalMap(order)
 	log.Println("mapppp", orderMap)
@@ -181,7 +173,7 @@ func (*GrpcServer) UpdateOrderItem (_ context.Context, req *grpcPb.UpdateOrderIt
 	quantity := req.GetQuantity()
 	customerId := req.GetCustId()
 
-	db := getDBInstance()
+	db := dbUtil.GetDBInstance()
 
 	params := &dynamodb.GetItemInput{
 		TableName:aws.String(orders_table),
@@ -247,7 +239,7 @@ func (*GrpcServer) UpdateOrderItem (_ context.Context, req *grpcPb.UpdateOrderIt
 }
 
 func (*GrpcServer) GetOrdersCount(context.Context, *grpcPb.OrdersCountRequest) (*grpcPb.OrdersCountResponse, error) {
-	db := getDBInstance()
+	db := dbUtil.GetDBInstance()
 
 	params := &dynamodb.DescribeTableInput{
 		TableName: aws.String(orders_table),
@@ -411,18 +403,19 @@ func getItemEntityFromItem(items []*grpcPb.Item) []types.Item {
 }
 
 func (*GrpcServer) GetCustomersCount(context.Context, *grpcPb.CustomersCountRequest) (*grpcPb.CustomersCountResponse, error) {
-	db := getDBInstance()
+	db := dbUtil.GetDBInstance()
 	// create the api params
-	params := &dynamodb.DescribeTableInput{
+	params := &dynamodb.DescribeTableInput {
 		TableName: aws.String("T3_Customer"),
 	}
 	// get the table description
 	resp, err := db.DescribeTable(params)
 	if err != nil {
-			  return nil, err
-			  }
+		return nil, err
+	}
 	countResp := &grpcPb.CustomersCountResponse {
 		Count: aws.Int64Value(resp.Table.ItemCount),
+		//Count: 2001,
 	}
 	return countResp, nil
 }
@@ -433,7 +426,7 @@ func (*GrpcServer) AddCustomer(_ context.Context, req *grpcPb.AddCustomerRequest
 	err := json.Unmarshal([]byte(req.NewCustomer), &customerData)
 	errorutil.CheckError(err, "")
 
-	db := getDBInstance()
+	db := dbUtil.GetDBInstance()
 
 	customerMap, err := dynamodbattribute.MarshalMap(customerData)
 	if err != nil {
@@ -461,7 +454,7 @@ func (*GrpcServer) GetCustomer (_ context.Context, req *grpcPb.CustomerRequest) 
 	customerId := req.CustomerId
 	resp := &grpcPb.CustomerResponse{}
 
-	db := getDBInstance()
+	db := dbUtil.GetDBInstance()
 
 	params := &dynamodb.GetItemInput{
 		TableName: aws.String("T3_Customer"),
@@ -488,7 +481,7 @@ func (*GrpcServer) DeleteCustomer (_ context.Context, req *grpcPb.CustomerReques
 	customerId := req.CustomerId
 	resp := &grpcPb.CustomerResponse{}
 
-	db := getDBInstance()
+	db := dbUtil.GetDBInstance()
 
 	params := &dynamodb.UpdateItemInput{
 		TableName: aws.String("T3_Customer"),

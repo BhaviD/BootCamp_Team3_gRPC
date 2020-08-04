@@ -2,10 +2,10 @@ package restaurantService
 
 import (
 	"fmt"
+	"github.com/BhaviD/BootCamp_Team3_gRPC/pkg/dynamoDB/dbUtil"
 	"github.com/BhaviD/BootCamp_Team3_gRPC/pkg/dynamoDB/types"
 	"github.com/BhaviD/BootCamp_Team3_gRPC/pkg/errorutil"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"strconv"
@@ -13,7 +13,7 @@ import (
 
 
 func SaveRestaurant(entity types.Restaurant) (types.Restaurant, error) {
-	db := MakeNewDbSession()
+	db := dbUtil.GetDBInstance()
 	restaurantMap, err := dynamodbattribute.MarshalMap(entity)
 	errorutil.CheckError(err, "Error occured While Marshalling Restaurant Entity")
 	_, err = db.PutItem(&dynamodb.PutItemInput{
@@ -26,7 +26,7 @@ func SaveRestaurant(entity types.Restaurant) (types.Restaurant, error) {
 }
 
 func GetRestaurant(id int64) (types.Restaurant, error) {
-	db := MakeNewDbSession()
+	db := dbUtil.GetDBInstance()
 	resp, err := db.GetItem(&dynamodb.GetItemInput{
 		TableName: aws.String("T3_Restaurant"),
 		Key: map[string]*dynamodb.AttributeValue{
@@ -45,7 +45,7 @@ func GetRestaurant(id int64) (types.Restaurant, error) {
 }
 
 func DeleteRestaurant(id int64) error{
-	db := MakeNewDbSession()
+	db := dbUtil.GetDBInstance()
 	params := &dynamodb.DeleteItemInput{
 		TableName: aws.String("T3_Restaurant"),
 		Key: map[string]*dynamodb.AttributeValue{
@@ -131,7 +131,7 @@ func UpdateItemInRestaurant(restaurantId int64,item types.Item) error {
 	return nil
 }
 func GetRestaurantCount()(*int64,error)  {
-	db:= MakeNewDbSession()
+	db:= dbUtil.GetDBInstance()
 	// create the api params
 	params := &dynamodb.DescribeTableInput{
 		TableName: aws.String("T3_Restaurant"),
@@ -143,16 +143,5 @@ func GetRestaurantCount()(*int64,error)  {
 		return nil, err
 	}
    return resp.Table.ItemCount,nil
-}
-
-func MakeNewDbSession() *dynamodb.DynamoDB {
-	sess := session.Must(session.NewSession(&aws.Config{
-		Region:   aws.String("us-east-1"),
-		Endpoint: aws.String("http://localhost:8000"),
-		//EndPoint: aws.String("https://dynamodb.us-east-1.amazonaws.com"),
-	}))
-
-	// create a dynamodb instance
-	return dynamodb.New(sess)
 }
 

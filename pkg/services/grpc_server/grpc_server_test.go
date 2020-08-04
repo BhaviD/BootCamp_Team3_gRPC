@@ -2,8 +2,8 @@ package grpc_server_test
 
 import (
 	"context"
-	"github.com/varungupte/BootCamp_Team3/pkg/services/grpcPb"
-	"github.com/varungupte/BootCamp_Team3/pkg/services/grpc_server"
+	"github.com/BhaviD/BootCamp_Team3_gRPC/pkg/services/grpcPb"
+	"github.com/BhaviD/BootCamp_Team3_gRPC/pkg/services/grpc_server"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"
 	"log"
