@@ -386,20 +386,20 @@ func TestGDeleteCustomerPass(t *testing.T) {
 	}
 }
 
-func TestAddCustomerPass(t *testing.T) {
-	ctx := context.Background()
-	conn, err := grpc.DialContext(ctx, "", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
-	if err != nil {
-		t.Fatalf("failed to dial: %v", err)
-	}
-	defer conn.Close()
-	oc := grpcPb.NewGRPCServiceClient(conn)
-	req := &grpcPb.AddCustomerRequest{}
-	_, err = oc.AddCustomer(context.Background(), req)
-	if err != nil {
-		t.Fatalf("Error While calling GetOrderDetail : %v ", err)
-	}
-}
+//func TestAddCustomerPass(t *testing.T) {
+//	ctx := context.Background()
+//	conn, err := grpc.DialContext(ctx, "", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+//	if err != nil {
+//		t.Fatalf("failed to dial: %v", err)
+//	}
+//	defer conn.Close()
+//	oc := grpcPb.NewGRPCServiceClient(conn)
+//	req := &grpcPb.AddCustomerRequest{}
+//	_, err = oc.AddCustomer(context.Background(), req)
+//	if err != nil {
+//		t.Fatalf("Error While calling GetOrderDetail : %v ", err)
+//	}
+//}
 
 
 
